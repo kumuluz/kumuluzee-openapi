@@ -7,20 +7,21 @@ import com.kumuluz.ee.common.dependencies.EeComponentType;
 import com.kumuluz.ee.common.dependencies.EeExtensionDef;
 import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
 import com.kumuluz.ee.jetty.JettyServletServer;
+import io.swagger.jaxrs2.integration.OpenApiServlet;
 
 import java.util.logging.Logger;
 
 /**
- * SwaggerExtension class.
+ * OpenApiExtension class.
  *
  * @author Zvone Gazvoda
  * @since 1.0.0
  */
 @EeExtensionDef(name = "OpenAPI", group = "OPEN_API")
 @EeComponentDependency(EeComponentType.JAX_RS)
-public class SwaggerExtension implements Extension {
+public class OpenApiExtension implements Extension {
 
-    private static final Logger LOG = Logger.getLogger(SwaggerExtension.class.getName());
+    private static final Logger LOG = Logger.getLogger(OpenApiExtension.class.getName());
 
     @Override
     public void load() {
@@ -35,9 +36,8 @@ public class SwaggerExtension implements Extension {
 
             JettyServletServer server = (JettyServletServer) kumuluzServerWrapper.getServer();
 
-            //ResourceConfig resourceConfig = new ResourceConfig(ApiListingResource.class, SwaggerSerializers.class);
+            server.registerServlet(OpenApiServlet.class, "/openapi/*");
 
-            //server.registerServlet(new ServletContainer(resourceConfig), "/v1", null, 1);
             //server.registerServlet(Bootstrap.class, "/swopa", 2);
 
             LOG.info("OpenAPI extension initialized.");
