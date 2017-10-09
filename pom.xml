@@ -29,7 +29,7 @@
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
         <gpg.plugin.version>1.6</gpg.plugin.version>
-        <swagger.version>2.0.0-rc1</swagger.version>
+        <swagger.version>2.0.0-rc2</swagger.version>
 
         <maven.plugin.api.version>3.5.0</maven.plugin.api.version>
         <maven-plugin-annotations.version>3.5</maven-plugin-annotations.version>
@@ -45,12 +45,6 @@
     </issueManagement>
 
     <developers>
-        <developer>
-            <name>Tilen Faganel</name>
-            <id>tfaga</id>
-            <email>tilen.faganel@me.com</email>
-            <url>https://github.com/TFaga</url>
-        </developer>
         <developer>
             <name>Zvone Gazvoda</name>
             <id>zvonegit</id>

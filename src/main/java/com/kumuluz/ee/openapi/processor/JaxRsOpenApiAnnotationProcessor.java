@@ -9,6 +9,7 @@ import io.swagger.oas.annotations.info.Info;
 import io.swagger.oas.models.OpenAPI;
 import io.swagger.oas.models.info.Contact;
 import io.swagger.oas.models.info.License;
+import io.swagger.oas.models.servers.Server;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -18,6 +19,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import java.io.File;
 import java.io.IOException;
@@ -100,6 +102,15 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
             info.setTermsOfService(infoAnnotation.termsOfService());
 
             openAPI.setInfo(info);
+
+            Server server = new Server();
+
+            ApplicationPath applicationPathAnnotation = elems[0].getAnnotation(ApplicationPath.class);
+            if (applicationPathAnnotation != null && !applicationPathAnnotation.value().equals("")) {
+                server.setUrl("http://localhost:8080/" + applicationPathAnnotation.value());
+            }
+
+            openAPI.addServersItem(server);
 
         }
 
