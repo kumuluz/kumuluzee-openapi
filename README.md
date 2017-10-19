@@ -34,7 +34,6 @@ When kumuluzee-openapi dependency is included in the project, you can start docu
 public class JavaSiApplication extends Application {...}
 ```
 
-
 #### Documenting resource class and operations:
 ```java
 @Path("sessions")
@@ -58,7 +57,6 @@ public class SessionsResource {
 }
 ```
 
-
 ### Access API specification
 
 Build and run project using:
@@ -67,7 +65,6 @@ Build and run project using:
 mvn clean package
 java -jar target/${project.build.finalName}.jar
 ```
-
 
 After startup API specification will be available at:
 
@@ -91,7 +88,9 @@ To serve API specification in visual form and to allow API consumers to interact
 </configuration>
 ```
 
-by default Swagger-UI will not be added to application.
+After startup Swagger-UI is available at: http://localhost:8080/api-specs/ui (for all APIs).
+
+By default Swagger-UI will not be added to application.
 
 
 ### Support for mutliple JAX-RS Application classes in single microservice
