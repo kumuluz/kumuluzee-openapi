@@ -26,8 +26,10 @@ When kumuluzee-openapi dependency is included in the project, you can start docu
 
 #### Documenting application class:
 ```java
-@SecurityScheme(name = "openid-connect", type = SecuritySchemeType.OPENIDCONNECT, openIdConnectUrl = "http://auth-server-url/.well-known/openid-configuration")
-@OpenAPIDefinition(info = @Info(title = "Rest API", version = "v1", description = "JavaSI API for managing conference.", security = @SecurityRequirement(name = "openid-connect"), servers = @Server(url ="http://localhost:8080/v1")))
+@SecurityScheme(name = "openid-connect", type = SecuritySchemeType.OPENIDCONNECT, 
+                openIdConnectUrl = "http://auth-server-url/.well-known/openid-configuration")
+@OpenAPIDefinition(info = @Info(title = "Rest API", version = "v1", description = "JavaSI API for managing conference.", 
+                    security = @SecurityRequirement(name = "openid-connect"), servers = @Server(url ="http://localhost:8080/v1")))
 @ApplicationPath("v1")
 public class JavaSiApplication extends Application {...}
 ```
@@ -55,6 +57,7 @@ public class SessionsResource {
     ...
 }
 ```
+
 
 ### Access API specification
 
