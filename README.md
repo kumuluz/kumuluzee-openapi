@@ -4,7 +4,7 @@
 > KumuluzEE OpenAPI extension for KumuluzEE microservice framework. 
 
 KumuluzEE OpenAPI extension allows you to document microservice APIs using OpenAPI v3 compliant annotations. Extension will automatically hook-up servlet that will 
-serve your API specifications on endpoint ```/api-specs/<jax-rs application base path>/openapi.[json|yaml]```. Furthermore, extensions allows you to integrate Swagger-UI into your
+serve your API specifications on endpoint ```/api-specs/<jax-rs application-base-path>/openapi.[json|yaml]```. Furthermore, extensions allows you to integrate Swagger-UI into your
 microservice that will visualize APIs documentation and allow you to interact with your APIs resources.
  
 More details: [OpenAPI v3 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md).
@@ -94,11 +94,11 @@ To serve API specification in visual form and to allow API consumers to interact
 by default Swagger-UI will not be added to application.
 
 
-### Support for mutliple JAX-RS Application clases in single microservice
+### Support for mutliple JAX-RS Application classes in single microservice
 
-If your microservice contains multiple JAX-RS applications, e.g. two versions of API, you have to privde some additional configuration for OpenAPI.
+If your microservice contains multiple JAX-RS Applications, e.g. two versions of API, you have to privde some additional configuration for OpenAPI.
 
-First, resources that belong to specific JAX-RS application must be defined in ```getClasses()``` method
+First, resources that belong to specific JAX-RS Application must be defined in ```getClasses()``` method
 
 ```java
     @Override
