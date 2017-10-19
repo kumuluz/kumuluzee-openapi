@@ -1,6 +1,6 @@
 # Contributing to KumuluzEE OpenAPI
 
-♥ [KumuluzEE OpenAPI](https://github.com/kumuluz/kumuluzee-openAPI) and want to get involved?
+♥ [KumuluzEE OpenAPI](https://github.com/kumuluz/kumuluzee-openapi) and want to get involved?
 Thanks! There are plenty of ways you can help!
 
 ## Bugs
@@ -43,7 +43,7 @@ Example:
 > causing the bug, and potential solutions (and your opinions on their
 > merits).
 
-**[File a bug report](https://github.com/kumuluz/kumuluzee-openAPI/issues/)**
+**[File a bug report](https://github.com/kumuluz/kumuluzee-openapi/issues/)**
 
 
 ## Pull requests
@@ -65,11 +65,11 @@ project:
 
    ```bash
    # Clones your fork of the repo into the current directory in terminal
-   git clone https://github.com/<your-username>/kumuluzee-openAPI.git
+   git clone https://github.com/<your-username>/kumuluzee-openapi.git
    # Navigate to the newly cloned directory
    cd kumuluzee-openAPI
    # Assigns the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/kumuluz/kumuluzee-openAPI.git
+   git remote add upstream https://github.com/kumuluz/kumuluzee-openapi.git
    ```
 
 2. If you cloned a while ago, get the latest changes from upstream:

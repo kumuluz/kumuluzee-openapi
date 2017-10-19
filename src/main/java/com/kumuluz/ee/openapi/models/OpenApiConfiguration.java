@@ -1,12 +1,14 @@
 package com.kumuluz.ee.openapi.models;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import io.swagger.oas.models.OpenAPI;
 
+import java.util.Set;
+
 /**
- * Created by zvoneg on 21/09/2017.
+ * OpenApiConfiguration class.
+ *
+ * @author Zvone Gazvoda
+ * @since 1.0.0
  */
 public class OpenApiConfiguration {
 

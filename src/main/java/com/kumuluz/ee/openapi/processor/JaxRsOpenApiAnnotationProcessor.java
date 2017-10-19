@@ -30,7 +30,10 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Created by zvoneg on 21/09/2017.
+ * JaxRsOpenApiAnnotationProcessor class - process Jax-RS and OpenAPI annotations and build openapi configurations.
+ *
+ * @author Zvone Gazvoda
+ * @since 1.0.0
  */
 public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
     private static final Logger LOG = Logger.getLogger(JaxRsOpenApiAnnotationProcessor.class.getName());

@@ -9,7 +9,10 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Created by zvoneg on 21/09/2017.
+ * AnnotationProcessorUtil class.
+ *
+ * @author Zvone Gazvoda
+ * @since 1.0.0
  */
 public class AnnotationProcessorUtil {
 

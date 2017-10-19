@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * OpenApiExtension class.
+ * OpenApiExtension class - hook-up OpenApiServlets to expose api specifications.
  *
  * @author Zvone Gazvoda
  * @since 1.0.0
