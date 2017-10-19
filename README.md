@@ -58,25 +58,22 @@ public class SessionsResource {
 
 ### Access API specification
 
-Build project using:
+Build and run project using:
 
 ```bash
 mvn clean package
-```
-
-Run project:
-
-```bash
 java -jar target/${project.build.finalName}.jar
 ```
 
-API specification will be available at:
 
-http://<hostname>:<port>/api-specs/<application-base-path>/openapi.[json,yaml]
+After startup API specification will be available at:
+
+**http://<-hostname-:<-port->/api-specs/<application-base-path>/openapi.[json,yaml]**
 
 example:
 
 http://localhost:8080/api-specs/v1/openapi.json
+
 
 ### Adding Swagger-UI
 
@@ -92,6 +89,7 @@ To serve API specification in visual form and to allow API consumers to interact
 ```
 
 by default Swagger-UI will not be added to application.
+
 
 ### Support for mutliple JAX-RS Application clases in single microservice
 
