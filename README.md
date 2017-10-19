@@ -22,7 +22,7 @@ You can enable KumuluzEE OpenAPI support by adding the following dependency:
 
 ### OpenAPI configuration
 
-When kumuluzee-openapi dependency is included in the project, you can start documenting your REST API using Swagger-Core [Annotations](https://github.com/swagger-api/swagger-core/wiki/Annotations-2.X).
+When kumuluzee-openapi dependency is included in the project, you can start documenting your REST API using [Swagger-Core Annotations](https://github.com/swagger-api/swagger-core/wiki/Annotations-2.X).
 
 #### Documenting application class:
 ```java
@@ -71,7 +71,7 @@ java -jar target/${project.build.finalName}.jar
 
 After startup API specification will be available at:
 
-**http://<-hostname-:<-port->/api-specs/<application-base-path>/openapi.[json,yaml]**
+**http://<-hostname-:<-port->/api-specs/<-application-base-path->/openapi.[json,yaml]**
 
 example:
 
