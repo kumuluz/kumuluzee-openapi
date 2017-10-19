@@ -73,7 +73,7 @@ After startup API specification will be available at:
 
 **http://<-hostname-:<-port->/api-specs/<-application-base-path->/openapi.[json,yaml]**
 
-example:
+Example:
 
 http://localhost:8080/api-specs/v1/openapi.json
 
