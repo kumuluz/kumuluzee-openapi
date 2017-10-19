@@ -81,7 +81,7 @@ http://localhost:8080/api-specs/v1/openapi.json
 ### Adding Swagger-UI
 
 To serve API specification in visual form and to allow API consumers to interact with API resources you can add Swagger-UI by setting 
- **includeSwaggerUI** to ****true**** in **kumuluzee-maven-plugin** configuration.
+ **includeSwaggerUI** to ***true*** in **kumuluzee-maven-plugin** configuration.
 
 ```xml
 <configuration>
