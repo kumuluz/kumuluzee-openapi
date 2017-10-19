@@ -29,7 +29,7 @@
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
         <gpg.plugin.version>1.6</gpg.plugin.version>
-        <swagger.version>2.0.0-rc2</swagger.version>
+        <swagger.version>2.0.0-SNAPSHOT</swagger.version>
 
         <maven.plugin.api.version>3.5.0</maven.plugin.api.version>
         <maven-plugin-annotations.version>3.5</maven-plugin-annotations.version>
@@ -37,6 +37,8 @@
 
         <maven-plugin-plugin.version>3.5</maven-plugin-plugin.version>
         <maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
+
+        <commons.version>3.6</commons.version>
     </properties>
 
     <issueManagement>
@@ -113,6 +115,11 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs2</artifactId>
             <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons.version}</version>
         </dependency>
     </dependencies>
 

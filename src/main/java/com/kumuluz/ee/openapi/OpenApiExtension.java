@@ -1,6 +1,5 @@
 package com.kumuluz.ee.openapi;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kumuluz.ee.common.Extension;
@@ -10,15 +9,12 @@ import com.kumuluz.ee.common.dependencies.EeComponentType;
 import com.kumuluz.ee.common.dependencies.EeExtensionDef;
 import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
 import com.kumuluz.ee.jetty.JettyServletServer;
-import com.kumuluz.ee.openapi.models.OpenApiConfiguration;
-import org.glassfish.jersey.servlet.ServletContainer;
+import io.swagger.jaxrs2.integration.OpenApiServlet;
+import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -47,40 +43,38 @@ public class OpenApiExtension implements Extension {
             JettyServletServer server = (JettyServletServer) kumuluzServerWrapper.getServer();
 
             Map<String, String> parameters = new HashMap<>();
-            parameters.put("jersey.config.server.wadl.disableWadl", "true");
-            parameters.put("jersey.config.server.provider.packages", "io.swagger.jaxrs2.integration.resources");
 
-            InputStream is = getClass().getClassLoader().getResourceAsStream("openapi-configuration.json");
+            List<Application> applications = new ArrayList<>();
+            ServiceLoader.load(Application.class).forEach(applications::add);
+
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 
-            OpenApiConfiguration openApiConfigurations = null;
-            try {
-                openApiConfigurations = mapper.readValue(is, new TypeReference<OpenApiConfiguration>() {
-                });
-            } catch (IOException e) {
-                LOG.warning("Unable to load OpenAPI configuration. OpenAPI definition will not be served.");
-            }
+            for (Application application : applications) {
 
-            if (openApiConfigurations != null) {
+                Map<String, String> specParams = new HashMap<>(parameters);
 
-                URL url = null;
-                try {
-                    url = new URL(openApiConfigurations.getOpenAPI().getServers().get(0).getUrl());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                Class<?> applicationClass = application.getClass();
+                if (targetClassIsProxied(applicationClass)) {
+                    applicationClass = applicationClass.getSuperclass();
                 }
 
-                if (url != null) {
-                    server.registerServlet(ServletContainer.class, "/api-specs" + url.getPath() + "/*", parameters, 2);
-                } else {
-                    server.registerServlet(ServletContainer.class, "/api-specs/*", parameters, 2);
-                }
+                String applicationPath = "";
+                ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);
+                applicationPath = applicationPathAnnotation.value();
 
-                LOG.info("OpenAPI extension initialized.");
-            } else {
-                LOG.warning("OpenAPI specifications will not be server.");
+                applicationPath = StringUtils.strip(applicationPath, "/");
+
+                specParams.put("openApi.configuration.location", "api-specs/" + applicationPath + "/openapi-configuration.json");
+
+                server.registerServlet(OpenApiServlet.class, "/api-specs/" + applicationPath + "/*", specParams, 1);
             }
+
+            LOG.info("OpenAPI extension initialized.");
         }
+    }
+
+    private boolean targetClassIsProxied(Class targetClass) {
+        return targetClass.getCanonicalName().contains("$Proxy");
     }
 }

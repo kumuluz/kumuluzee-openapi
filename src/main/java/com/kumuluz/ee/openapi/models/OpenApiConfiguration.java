@@ -1,5 +1,6 @@
 package com.kumuluz.ee.openapi.models;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import io.swagger.oas.models.OpenAPI;
