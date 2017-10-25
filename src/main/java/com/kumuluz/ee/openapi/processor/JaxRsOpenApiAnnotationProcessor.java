@@ -22,8 +22,10 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Application;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -73,7 +75,8 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
         elements = roundEnv.getElementsAnnotatedWith(Path.class);
         elements.forEach(e -> getElementPackage(resourceElementNames, e));
 
-        elements = roundEnv.getElementsAnnotatedWith(ApplicationPath.class);
+        elements = roundEnv.getElementsAnnotatedWith(OpenAPIDefinition.class);
+        elements.forEach(e -> getElementName(applicationElementNames, e));
 
         OpenApiConfiguration oac = null;
 
@@ -90,31 +93,52 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                     info.setTitle(definitionAnnotation.info().title());
                     info.setVersion(definitionAnnotation.info().version());
 
-                    Contact contact = new Contact();
-                    contact.setEmail(definitionAnnotation.info().contact().email());
-                    contact.setName(definitionAnnotation.info().contact().name());
-                    contact.setUrl(definitionAnnotation.info().contact().url());
+                    Contact contact = null;
+                    if (!definitionAnnotation.info().contact().email().equals("")) {
+                        contact = new Contact();
+                        contact.setEmail(definitionAnnotation.info().contact().email());
+                    }
+                    if (!definitionAnnotation.info().contact().name().equals("")) {
+                        if (contact == null) contact = new Contact();
+                        contact.setName(definitionAnnotation.info().contact().name());
+                    }
+                    if (!definitionAnnotation.info().contact().url().equals("")) {
+                        if (contact == null) contact = new Contact();
+                        contact.setUrl(definitionAnnotation.info().contact().url());
+                    }
                     info.setContact(contact);
 
-                    info.setDescription(definitionAnnotation.info().description());
+                    if (!definitionAnnotation.info().description().equals("")) {
+                        info.setDescription(definitionAnnotation.info().description());
+                    }
 
-                    License license = new License();
-                    license.setName(definitionAnnotation.info().license().name());
-                    license.setUrl(definitionAnnotation.info().license().url());
+                    License license = null;
 
+                    if (!definitionAnnotation.info().license().name().equals("")) {
+                        license = new License();
+                        license.setName(definitionAnnotation.info().license().name());
+                    }
+                    if (!definitionAnnotation.info().license().url().equals("")) {
+                        if (license == null) license = new License();
+                        license.setUrl(definitionAnnotation.info().license().url());
+                    }
                     info.setLicense(license);
 
-                    info.setTermsOfService(definitionAnnotation.info().termsOfService());
+                    if (definitionAnnotation.info().termsOfService().equals("")) {
+                        info.setTermsOfService(definitionAnnotation.info().termsOfService());
+                    }
 
                     openAPI.setInfo(info);
 
                     ApplicationPath applicationPathAnnotation = element.getAnnotation(ApplicationPath.class);
                     if (definitionAnnotation.servers().length == 0) {
-                        if (applicationPathAnnotation != null && !applicationPathAnnotation.value().equals("")) {
-                            Server server = new Server();
+                        Server server = new Server();
+                        if (applicationPathAnnotation != null) {
                             server.setUrl("http://localhost:8080/" + applicationPathAnnotation.value());
-                            openAPI.addServersItem(server);
+                        } else {
+                            server.setUrl("http://localhost:8080/");
                         }
+                        openAPI.addServersItem(server);
                     } else {
                         for (io.swagger.oas.annotations.servers.Server s : definitionAnnotation.servers()) {
                             Server server = new Server();
@@ -127,7 +151,7 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                     oac = new OpenApiConfiguration();
 
                     oac.setPrettyPrint(true);
-                    if (elements.size() == 1) {
+                    if (applicationElementNames.size() == 1) {
                         oac.setResourcePackages(resourceElementNames);
                     }
                     oac.setOpenAPI(openAPI);
@@ -138,24 +162,28 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                         String jsonOAC = mapper.writeValueAsString(oac);
 
-                        String path = applicationPathAnnotation.value();
+                        String path = new URL(openAPI.getServers().get(0).getUrl()).getPath();
 
                         path = StringUtils.strip(path, "/");
 
-                        AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/" + path + "/openapi-configuration.json", filer);
+                        if (path.equals("")) {
+                            AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/openapi-configuration.json", filer);
+                        } else {
+                            AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/" + path + "/openapi-configuration.json", filer);
+                        }
                     } catch (IOException e) {
                         LOG.warning(e.getMessage());
                     }
                 }
             }
 
-            elements.forEach(e -> getElementName(applicationElementNames, e));
             try {
                 AnnotationProcessorUtil.writeFileSet(applicationElementNames, "META-INF/services/javax.ws.rs.core.Application", filer);
             } catch (IOException e) {
                 LOG.warning(e.getMessage());
             }
         }
+
         return false;
     }
 
@@ -164,7 +192,7 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
         ElementKind elementKind = e.getKind();
 
         if (elementKind.equals(ElementKind.CLASS)) {
-            resourceElementNames.add(e.toString().substring(0, e.toString().lastIndexOf(".")));
+            jaxRsElementNames.add(e.toString().substring(0, e.toString().lastIndexOf(".")));
         }
     }
 
@@ -173,7 +201,9 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
         ElementKind elementKind = e.getKind();
 
         if (elementKind.equals(ElementKind.CLASS)) {
-            applicationElementNames.add(e.toString());
+            if (((TypeElement) e).getSuperclass().toString().equals(Application.class.getTypeName())) {
+                jaxRsElementNames.add(e.toString());
+            }
         }
     }
 }

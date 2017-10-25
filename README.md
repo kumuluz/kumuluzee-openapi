@@ -57,7 +57,7 @@ public class SessionsResource {
 }
 ```
 
-### Access API specification
+### Accessing API specification
 
 Build and run project using:
 
@@ -111,7 +111,7 @@ First, resources that belong to specific JAX-RS Application must be defined in `
     }
 ```
 
-and second, you have to provide list of packages to kumuluzee-openapi extension for each JAX-RS Application by providing **apiSpecifications** in configuration of **kumuluzee-maven-plugin**:
+and second, you have to provide list of packages to openapi extension for each JAX-RS Application by providing **apiSpecifications** in configuration of **kumuluzee-maven-plugin**:
 
 ```xml
 <configuration>

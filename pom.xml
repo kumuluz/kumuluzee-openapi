@@ -15,7 +15,7 @@
     <inceptionYear>2017</inceptionYear>
     <description>
         KumuluzEE OpenAPI extension that allows you to document your REST APIs using Swagger-Core OpenAPI annotations, expose raw OpenAPI
-        specification and UI with usear readable form.
+        specification and Swagger-UI to interact with API.
     </description>
 
     <url>https://ee.kumuluz.com</url>
