@@ -67,7 +67,7 @@ project:
    # Clones your fork of the repo into the current directory in terminal
    git clone https://github.com/<your-username>/kumuluzee-openapi.git
    # Navigate to the newly cloned directory
-   cd kumuluzee-openAPI
+   cd kumuluzee-openapi
    # Assigns the original repo to a remote called "upstream"
    git remote add upstream https://github.com/kumuluz/kumuluzee-openapi.git
    ```

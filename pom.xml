@@ -8,14 +8,11 @@
     <artifactId>kumuluzee-openapi</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <packaging>jar</packaging>
-
     <name>KumuluzEE OpenAPI</name>
 
     <inceptionYear>2017</inceptionYear>
     <description>
-        KumuluzEE OpenAPI extension that allows you to document your REST APIs using Swagger-Core OpenAPI annotations, expose raw OpenAPI
-        specification and Swagger-UI to interact with API.
+        KumuluzEE OpenAPI extension provides powerful tools to incorporate the OpenAPI Specification to your microservice.
     </description>
 
     <url>https://ee.kumuluz.com</url>
@@ -41,6 +38,12 @@
 
         <commons.version>3.6</commons.version>
     </properties>
+
+    <scm>
+        <connection>scm:git:git@github.com:kumuluz/kumuluzee-openapi.git</connection>
+        <developerConnection>scm:git:git@github.com:kumuluz/kumuluzee-openapi.git</developerConnection>
+        <url>git@github.com:kumuluz/kumuluzee-openapi.git</url>
+    </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>

@@ -1,7 +1,7 @@
 # KumuluzEE OpenAPI
 [![Build Status](https://img.shields.io/travis/kumuluz/kumuluzee-openapi/master.svg?style=flat)](https://travis-ci.org/kumuluz/kumuluzee-openapi)
 
-> KumuluzEE OpenAPI extension for KumuluzEE microservice framework. 
+> KumuluzEE OpenAPI extension provides powerful tools to incorporate the OpenAPI Specification to your microservice.
 
 KumuluzEE OpenAPI extension allows you to document microservice APIs using OpenAPI v3 compliant annotations. Extension will automatically hook-up servlet that will 
 serve your API specifications on endpoint ```/api-specs/<jax-rs application-base-path>/openapi.[json|yaml]```. Furthermore, extensions allows you to integrate Swagger-UI into your
@@ -139,6 +139,7 @@ and second, you have to provide list of packages to openapi extension for each J
 
 Multiple JAX-RS applications in singe JAR only work without CDI.
 
+
 ## Changelog
 
 Recent changes can be viewed on Github on the [Releases Page](https://github.com/kumuluz/kumuluzee-openapi/releases)
@@ -155,7 +156,6 @@ When submitting a bugfix, write a test that exposes the bug and fails before app
 alongside the fix.
 
 When submitting a new feature, add tests that cover the feature.
-
 
 ## License
 
