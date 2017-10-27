@@ -95,7 +95,7 @@ By default Swagger-UI will not be added to application.
 
 ## Support for mutliple JAX-RS Application classes in single microservice
 
-If your microservice contains multiple JAX-RS Applications, e.g. two versions of API, you have to privde some additional configuration for OpenAPI.
+If your microservice contains multiple JAX-RS Applications, e.g. two versions of API, you have to provide some additional configuration for OpenAPI.
 
 First, resources that belong to specific JAX-RS Application must be defined in ```getClasses()``` method
 
