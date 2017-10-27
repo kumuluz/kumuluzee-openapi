@@ -128,7 +128,7 @@ and second, you have to provide list of packages to openapi extension for each J
             <apiSpecification>
                 <applicationPath>/v2</applicationPath>
                 <resourcePackages>
-                    com.kumuluz.ee.samples.v1.resources
+                    com.kumuluz.ee.samples.v2.resources
                 </resourcePackages>
             </apiSpecification>
         </apiSpecifications>
@@ -136,6 +136,8 @@ and second, you have to provide list of packages to openapi extension for each J
     </specificationConfig>
 </configuration>
 ```
+
+Multiple JAX-RS applications in singe JAR only work without CDI.
 
 ## Changelog
 
