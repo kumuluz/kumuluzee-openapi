@@ -12,6 +12,7 @@
 
     <inceptionYear>2017</inceptionYear>
     <description>
+        KumuluzEE OpenAPI extension provides powerful tools to incorporate the OpenAPI Specification to your microservice.
     </description>
 
     <url>https://ee.kumuluz.com</url>

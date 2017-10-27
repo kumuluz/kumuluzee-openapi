@@ -1,7 +1,7 @@
 # KumuluzEE OpenAPI
 [![Build Status](https://img.shields.io/travis/kumuluz/kumuluzee-openapi/master.svg?style=flat)](https://travis-ci.org/kumuluz/kumuluzee-openapi)
 
-> 
+> KumuluzEE OpenAPI extension provides powerful tools to incorporate the OpenAPI Specification to your microservice.
 
 ## Usage
 
