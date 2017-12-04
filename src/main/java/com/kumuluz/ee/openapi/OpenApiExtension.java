@@ -6,7 +6,9 @@ import com.kumuluz.ee.common.dependencies.EeComponentDependency;
 import com.kumuluz.ee.common.dependencies.EeComponentType;
 import com.kumuluz.ee.common.dependencies.EeExtensionDef;
 import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
+import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 import com.kumuluz.ee.jetty.JettyServletServer;
+import com.kumuluz.ee.openapi.filters.SwaggerUIFilter;
 import io.swagger.jaxrs2.integration.OpenApiServlet;
 import io.swagger.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.lang3.StringUtils;
@@ -36,43 +38,51 @@ public class OpenApiExtension implements Extension {
     public void init(KumuluzServerWrapper kumuluzServerWrapper, EeConfig eeConfig) {
         if (kumuluzServerWrapper.getServer() instanceof JettyServletServer) {
 
-            LOG.info("Initializing OpenAPI extension.");
+            ConfigurationUtil configurationUtil = ConfigurationUtil.getInstance();
 
-            JettyServletServer server = (JettyServletServer) kumuluzServerWrapper.getServer();
+            if (configurationUtil.getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
 
-            List<Application> applications = new ArrayList<>();
-            ServiceLoader.load(Application.class).forEach(applications::add);
+                LOG.info("Initializing OpenAPI extension.");
 
-            for (Application application : applications) {
+                JettyServletServer server = (JettyServletServer) kumuluzServerWrapper.getServer();
 
-                Map<String, String> specParams = new HashMap<>();
+                List<Application> applications = new ArrayList<>();
+                ServiceLoader.load(Application.class).forEach(applications::add);
 
-                Class<?> applicationClass = application.getClass();
-                if (targetClassIsProxied(applicationClass)) {
-                    applicationClass = applicationClass.getSuperclass();
+                for (Application application : applications) {
+
+                    Map<String, String> specParams = new HashMap<>();
+
+                    Class<?> applicationClass = application.getClass();
+                    if (targetClassIsProxied(applicationClass)) {
+                        applicationClass = applicationClass.getSuperclass();
+                    }
+
+                    String applicationPath = "";
+                    ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);
+                    if (applicationPathAnnotation != null) {
+                        applicationPath = applicationPathAnnotation.value();
+                    } else {
+                        OpenAPIDefinition openAPIDefinitionAnnotation = applicationClass.getAnnotation(OpenAPIDefinition.class);
+                        applicationPath = openAPIDefinitionAnnotation.servers()[0].url();
+                    }
+
+                    applicationPath = StringUtils.strip(applicationPath, "/");
+
+                    if (applicationPath.equals("")) {
+                        specParams.put("openApi.configuration.location", "api-specs/openapi-configuration.json");
+                        server.registerServlet(OpenApiServlet.class, "/api-specs/*", specParams, 1);
+                    } else {
+                        specParams.put("openApi.configuration.location", "api-specs/" + applicationPath + "/openapi-configuration.json");
+                        server.registerServlet(OpenApiServlet.class, "/api-specs/" + applicationPath + "/*", specParams, 1);
+                    }
                 }
 
-                String applicationPath = "";
-                ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);
-                if (applicationPathAnnotation != null) {
-                    applicationPath = applicationPathAnnotation.value();
-                } else {
-                    OpenAPIDefinition openAPIDefinitionAnnotation = applicationClass.getAnnotation(OpenAPIDefinition.class);
-                    applicationPath = openAPIDefinitionAnnotation.servers()[0].url();
-                }
-
-                applicationPath = StringUtils.strip(applicationPath, "/");
-
-                if (applicationPath.equals("")) {
-                    specParams.put("openApi.configuration.location", "api-specs/openapi-configuration.json");
-                    server.registerServlet(OpenApiServlet.class, "/api-specs/*", specParams, 1);
-                } else {
-                    specParams.put("openApi.configuration.location", "api-specs/" + applicationPath + "/openapi-configuration.json");
-                    server.registerServlet(OpenApiServlet.class, "/api-specs/" + applicationPath + "/*", specParams, 1);
-                }
+                LOG.info("OpenAPI extension initialized.");
             }
-
-            LOG.info("OpenAPI extension initialized.");
+        } else {
+            JettyServletServer server = (JettyServletServer) kumuluzServerWrapper.getServer();
+            server.registerFilter(SwaggerUIFilter.class, "/api-specs/ui");
         }
     }
 
