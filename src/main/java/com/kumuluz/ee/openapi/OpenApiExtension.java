@@ -79,10 +79,10 @@ public class OpenApiExtension implements Extension {
                 }
 
                 LOG.info("OpenAPI extension initialized.");
+            } else {
+                JettyServletServer server = (JettyServletServer) kumuluzServerWrapper.getServer();
+                server.registerFilter(SwaggerUIFilter.class, "/api-specs/*");
             }
-        } else {
-            JettyServletServer server = (JettyServletServer) kumuluzServerWrapper.getServer();
-            server.registerFilter(SwaggerUIFilter.class, "/api-specs/*");
         }
     }
 
