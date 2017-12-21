@@ -74,71 +74,23 @@ Example:
 
 http://localhost:8080/api-specs/v1/openapi.json
 
+Serving OpenAPI specification can be disabled by setting property **kumuluzee.openapi.spec.enabled** to false. By default serving API spec is enabled.
 
 ## Adding Swagger-UI
 
 To serve API specification in visual form and to allow API consumers to interact with API resources you can add Swagger-UI by setting 
- **includeSwaggerUI** to ***true*** in **kumuluzee-maven-plugin** configuration.
+  **kumuluzee.openapi.ui.enabled** to ***true***, by default UI is not included.
 
-```xml
-<configuration>
-    <specificationConfig>
-        <includeSwaggerUI>true</includeSwaggerUI>
-    </specificationConfig>
-</configuration>
+```yaml
+kumuluzee:
+  openapi:
+      ui:
+        enabled: true
 ```
 
 After startup Swagger-UI is available at: http://localhost:8080/api-specs/ui (for all APIs).
 
-By default Swagger-UI will not be added to application.
-
-
-## Support for mutliple JAX-RS Application classes in single microservice
-
-If your microservice contains multiple JAX-RS Applications, e.g. two versions of API, you have to provide some additional configuration for OpenAPI.
-
-First, resources that belong to specific JAX-RS Application must be defined in ```getClasses()``` method
-
-```java
-    @Override
-    public Set<Class<?>> getClasses() {
-        Set<Class<?>> classes = new HashSet<>();
-
-        classes.add(SessionsResource.class);
-        classes.add(SpeakersResource.class);
-
-        return classes;
-    }
-```
-
-and second, you have to provide list of packages to openapi extension for each JAX-RS Application by providing **apiSpecifications** in configuration of **kumuluzee-maven-plugin**:
-
-```xml
-<configuration>
-    <specificationConfig>
-        <includeSwaggerUI>true</includeSwaggerUI>
-        
-        <apiSpecifications>
-            <apiSpecification>
-                <applicationPath>/v1</applicationPath>
-                <resourcePackages>
-                    com.kumuluz.ee.samples.v1.resources
-                </resourcePackages>
-            </apiSpecification>
-            <apiSpecification>
-                <applicationPath>/v2</applicationPath>
-                <resourcePackages>
-                    com.kumuluz.ee.samples.v2.resources
-                </resourcePackages>
-            </apiSpecification>
-        </apiSpecifications>
-        
-    </specificationConfig>
-</configuration>
-```
-
-Multiple JAX-RS applications in singe JAR work without CDI only.
-
+By default Swagger-UI will not be added to application, you have to explicitly set the above property to true.
 
 ## Changelog
 
