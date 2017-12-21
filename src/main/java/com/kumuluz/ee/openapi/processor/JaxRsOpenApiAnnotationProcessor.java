@@ -1,10 +1,19 @@
 package com.kumuluz.ee.openapi.processor;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.kumuluz.ee.openapi.models.OpenApiConfiguration;
 import com.kumuluz.ee.openapi.utils.AnnotationProcessorUtil;
+import com.kumuluz.ee.openapi.utils.ApiSpecURL;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+import com.kumuluz.ee.openapi.utils.ApiSpecURLs;
 import io.swagger.oas.annotations.OpenAPIDefinition;
 import io.swagger.oas.models.OpenAPI;
 import io.swagger.oas.models.info.Contact;
@@ -23,9 +32,9 @@ import javax.lang.model.element.TypeElement;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,7 +89,13 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
 
         OpenApiConfiguration oac = null;
 
+        ApiSpecURLs urls = new ApiSpecURLs();
+
         if (elements.size() != 0) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
             for (Element element : elements) {
                 OpenAPI openAPI = new OpenAPI();
 
@@ -154,23 +169,36 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                     if (applicationElementNames.size() == 1) {
                         oac.setResourcePackages(resourceElementNames);
                     }
+
                     oac.setOpenAPI(openAPI);
 
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
                         String jsonOAC = mapper.writeValueAsString(oac);
 
                         String path = new URL(openAPI.getServers().get(0).getUrl()).getPath();
 
                         path = StringUtils.strip(path, "/");
 
+                        URL serverUrl = new URL(openAPI.getServers().get(0).getUrl());
+
+                        ApiSpecURL apiSpecURL;
                         if (path.equals("")) {
                             AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/openapi-configuration.json", filer);
+
+                            apiSpecURL = new ApiSpecURL(oac.getOpenAPI().getInfo().getTitle() + " - " + oac.getOpenAPI()
+                                    .getInfo().getVersion(), serverUrl.getProtocol() + "://" + serverUrl.getHost() + ":" + serverUrl
+                                    .getPort() + "/api-specs/openapi-configuration.json");
                         } else {
                             AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/" + path + "/openapi-configuration.json", filer);
+
+                            apiSpecURL = new ApiSpecURL(oac.getOpenAPI().getInfo().getTitle() + " - " + oac.getOpenAPI()
+                                    .getInfo().getVersion(), serverUrl.getProtocol() + "://" + serverUrl.getHost() + ":" +
+                                    serverUrl.getPort() + "/api-specs/" + path + "/openapi-configuration.json");
+
                         }
+
+                        urls.addApiSpecUrl(apiSpecURL);
                     } catch (IOException e) {
                         LOG.warning(e.getMessage());
                     }
@@ -182,6 +210,27 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
             } catch (IOException e) {
                 LOG.warning(e.getMessage());
             }
+
+            if (urls.getUrls().size() != 0) {
+                try {
+                    String urlsJson = mapper.writeValueAsString(urls);
+
+                    LOG.warning("URLS: " + urlsJson);
+
+                    java.nio.file.Path path = Paths.get("/classes/swagger-ui/api-specs/ui/index.html");
+                    String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+
+                    LOG.warning(content);
+
+                    content.replace("url: \"http://petstore.swagger.io/v2/swagger.json\"", urlsJson);
+
+                    Files.write(path, content.getBytes(StandardCharsets.UTF_8));
+
+                } catch (IOException e) {
+                    LOG.warning(e.getMessage());
+                }
+            }
+
         }
 
         return false;
