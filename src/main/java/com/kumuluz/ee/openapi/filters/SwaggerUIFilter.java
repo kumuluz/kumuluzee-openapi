@@ -4,13 +4,12 @@ import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class SwaggerUIFilter implements Filter {
 
-    FilterConfig filterConfig;
+    private FilterConfig filterConfig;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -24,7 +23,7 @@ public class SwaggerUIFilter implements Filter {
         ConfigurationUtil configurationUtil = ConfigurationUtil.getInstance();
         if (configurationUtil.getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
 
-            /*HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
             String path = httpServletRequest.getServletPath();
@@ -32,20 +31,20 @@ public class SwaggerUIFilter implements Filter {
             if (path.contains("/ui")) {
                 if ((httpServletRequest.getQueryString() == null || !httpServletRequest.getQueryString().contains
                         ("url"))) {
-                    String url = filterConfig.getInitParameter("urls");
+                    String url = filterConfig.getInitParameter("url");
                     if (httpServletRequest.getPathInfo() != null) {
-                        httpServletResponse.sendRedirect("/api-specs/ui" + httpServletRequest.getPathInfo() + "?urls=" + url);
+                        httpServletResponse.sendRedirect("/api-specs/ui" + httpServletRequest.getPathInfo() + "?url=" + url);
                     } else {
-                        httpServletResponse.sendRedirect("/api-specs/ui/?urls=" + url);
+                        httpServletResponse.sendRedirect("/api-specs/ui/?url=" + url);
                     }
                 } else {
                     filterChain.doFilter(httpServletRequest, httpServletResponse);
                 }
 
             } else {
-             */
-            filterChain.doFilter(servletRequest, servletResponse);
-            //}
+
+                filterChain.doFilter(servletRequest, servletResponse);
+            }
 
         } else {
             ((HttpServletResponse) servletResponse).sendError(HttpServletResponse.SC_NOT_FOUND);
