@@ -20,36 +20,27 @@ public class SwaggerUIFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
 
-        ConfigurationUtil configurationUtil = ConfigurationUtil.getInstance();
-        if (configurationUtil.getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
-            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-            HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+        String path = httpServletRequest.getServletPath();
 
-            String path = httpServletRequest.getServletPath();
-
-            if (path.contains("/ui")) {
-                if ((httpServletRequest.getQueryString() == null || !httpServletRequest.getQueryString().contains
-                        ("url"))) {
-                    String url = filterConfig.getInitParameter("url");
-                    if (httpServletRequest.getPathInfo() != null) {
-                        httpServletResponse.sendRedirect("/api-specs/ui" + httpServletRequest.getPathInfo() + "?url=" + url);
-                    } else {
-                        httpServletResponse.sendRedirect("/api-specs/ui/?url=" + url);
-                    }
+        if (path.contains("/ui")) {
+            if ((httpServletRequest.getQueryString() == null || !httpServletRequest.getQueryString().contains
+                    ("url"))) {
+                String url = filterConfig.getInitParameter("url");
+                if (httpServletRequest.getPathInfo() != null) {
+                    httpServletResponse.sendRedirect("/api-specs/ui" + httpServletRequest.getPathInfo() + "?url=" + url);
                 } else {
-                    filterChain.doFilter(httpServletRequest, httpServletResponse);
+                    httpServletResponse.sendRedirect("/api-specs/ui/?url=" + url);
                 }
-
             } else {
-
-                filterChain.doFilter(servletRequest, servletResponse);
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
             }
 
         } else {
-            ((HttpServletResponse) servletResponse).sendError(HttpServletResponse.SC_NOT_FOUND);
+            filterChain.doFilter(servletRequest, servletResponse);
         }
-
     }
 
     @Override
