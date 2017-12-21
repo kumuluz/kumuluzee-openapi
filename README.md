@@ -5,7 +5,7 @@
 
 KumuluzEE OpenAPI extension allows you to document microservice APIs using OpenAPI v3 compliant annotations. Extension will automatically hook-up servlet that will 
 serve your API specifications on endpoint ```/api-specs/<jax-rs application-base-path>/openapi.[json|yaml]```. Furthermore, extensions allows you to integrate Swagger-UI into your
-microservice that will visualize APIs documentation and allow you to interact with your APIs resources.
+microservice that will visualize APIs documentation and allow you to interact with your API resources.
  
 More details: [OpenAPI v3 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md).
 

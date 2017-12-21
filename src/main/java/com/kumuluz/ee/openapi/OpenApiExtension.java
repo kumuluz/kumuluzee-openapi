@@ -10,8 +10,8 @@ import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 import com.kumuluz.ee.jetty.JettyServletServer;
 import com.kumuluz.ee.openapi.filters.SwaggerUIFilter;
-import io.swagger.jaxrs2.integration.OpenApiServlet;
-import io.swagger.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.jaxrs2.integration.OpenApiServlet;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.servlet.DefaultServlet;
 

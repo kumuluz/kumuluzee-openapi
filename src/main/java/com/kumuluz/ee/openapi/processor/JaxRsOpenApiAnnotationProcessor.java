@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.kumuluz.ee.openapi.models.OpenApiConfiguration;
 import com.kumuluz.ee.openapi.utils.AnnotationProcessorUtil;
-import io.swagger.oas.annotations.OpenAPIDefinition;
-import io.swagger.oas.models.OpenAPI;
-import io.swagger.oas.models.info.Contact;
-import io.swagger.oas.models.info.License;
-import io.swagger.oas.models.servers.Server;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -87,7 +87,7 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
             for (Element element : elements) {
                 OpenAPI openAPI = new OpenAPI();
 
-                io.swagger.oas.models.info.Info info = new io.swagger.oas.models.info.Info();
+                io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
 
                 OpenAPIDefinition definitionAnnotation = element.getAnnotation(OpenAPIDefinition.class);
 
@@ -143,7 +143,7 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                         }
                         openAPI.addServersItem(server);
                     } else {
-                        for (io.swagger.oas.annotations.servers.Server s : definitionAnnotation.servers()) {
+                        for (io.swagger.v3.oas.annotations.servers.Server s : definitionAnnotation.servers()) {
                             Server server = new Server();
                             server.setUrl(s.url());
                             server.setDescription(s.description());

@@ -1,6 +1,6 @@
 package com.kumuluz.ee.openapi.models;
 
-import io.swagger.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.OpenAPI;
 
 import java.util.Set;
 
