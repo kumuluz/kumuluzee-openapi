@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.kumuluz.ee.openapi.models.OpenApiConfiguration;
 import com.kumuluz.ee.openapi.utils.AnnotationProcessorUtil;
-import io.swagger.oas.annotations.OpenAPIDefinition;
-import io.swagger.oas.models.OpenAPI;
-import io.swagger.oas.models.info.Contact;
-import io.swagger.oas.models.info.License;
-import io.swagger.oas.models.servers.Server;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -23,7 +23,6 @@ import javax.lang.model.element.TypeElement;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -81,10 +80,14 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
         OpenApiConfiguration oac = null;
 
         if (elements.size() != 0) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
             for (Element element : elements) {
                 OpenAPI openAPI = new OpenAPI();
 
-                io.swagger.oas.models.info.Info info = new io.swagger.oas.models.info.Info();
+                io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
 
                 OpenAPIDefinition definitionAnnotation = element.getAnnotation(OpenAPIDefinition.class);
 
@@ -140,7 +143,7 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                         }
                         openAPI.addServersItem(server);
                     } else {
-                        for (io.swagger.oas.annotations.servers.Server s : definitionAnnotation.servers()) {
+                        for (io.swagger.v3.oas.annotations.servers.Server s : definitionAnnotation.servers()) {
                             Server server = new Server();
                             server.setUrl(s.url());
                             server.setDescription(s.description());
@@ -154,12 +157,11 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                     if (applicationElementNames.size() == 1) {
                         oac.setResourcePackages(resourceElementNames);
                     }
+
                     oac.setOpenAPI(openAPI);
 
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
                         String jsonOAC = mapper.writeValueAsString(oac);
 
                         String path = new URL(openAPI.getServers().get(0).getUrl()).getPath();
@@ -171,6 +173,7 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                         } else {
                             AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/" + path + "/openapi-configuration.json", filer);
                         }
+
                     } catch (IOException e) {
                         LOG.warning(e.getMessage());
                     }

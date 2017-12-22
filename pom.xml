@@ -27,7 +27,8 @@
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
         <gpg.plugin.version>1.6</gpg.plugin.version>
-        <swagger.version>2.0.0-SNAPSHOT</swagger.version>
+        <swagger.version>2.0.0-rc3</swagger.version>
+        <swagger-ui.version>3.2.2</swagger-ui.version>
 
         <maven.plugin.api.version>3.5.0</maven.plugin.api.version>
         <maven-plugin-annotations.version>3.5</maven-plugin-annotations.version>
@@ -35,6 +36,9 @@
 
         <maven-plugin-plugin.version>3.5</maven-plugin-plugin.version>
         <maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
+        <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
+
+        <download-maven-plugin.version>1.2.1</download-maven-plugin.version>
 
         <commons.version>3.6</commons.version>
     </properties>
@@ -106,17 +110,17 @@
             <version>2.25.1</version>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
+            <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>${swagger.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
+            <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-models</artifactId>
             <version>${swagger.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
+            <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-jaxrs2</artifactId>
             <version>${swagger.version}</version>
         </dependency>
@@ -164,6 +168,47 @@
                             <testIncludes>
                                 <include>com/kumuluz/ee/openapi/processor/*</include>
                             </testIncludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>${download-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>
+                            generate-resources
+                        </phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://github.com/swagger-api/swagger-ui/archive/v${swagger-ui.version}.tar.gz</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes/swagger-ui/api-specs/ui</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/swagger-ui-${swagger-ui.version}/dist</directory>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
