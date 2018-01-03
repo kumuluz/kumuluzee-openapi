@@ -62,9 +62,6 @@ public class OpenApiExtension implements Extension {
 
                     String applicationPath = "";
 
-                    Optional<Integer> port = ConfigurationUtil.getInstance().getInteger("kumuluzee.server.http.port");
-
-
                     OpenAPIDefinition openAPIDefinitionAnnotation = applicationClass.getAnnotation(OpenAPIDefinition.class);
 
                     ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);

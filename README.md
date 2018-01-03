@@ -88,7 +88,7 @@ To serve API specification in visual form and to allow API consumers to interact
 </dependency>
 ```
 
-Dependency will include OpenAPI UI artifacts, in case you want to disable OpenAPI UI during the runtime you can do so by setting configuration property:
+Dependency will include OpenAPI UI artifacts, in case you want to temporarily disable OpenAPI UI you can do so by setting configuration property:
  
 ```yaml
 kumuluzee:
