@@ -5,15 +5,12 @@ import com.kumuluz.ee.common.config.EeConfig;
 import com.kumuluz.ee.common.dependencies.EeComponentDependency;
 import com.kumuluz.ee.common.dependencies.EeComponentType;
 import com.kumuluz.ee.common.dependencies.EeExtensionDef;
-import com.kumuluz.ee.common.utils.ResourceUtils;
 import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 import com.kumuluz.ee.jetty.JettyServletServer;
-import com.kumuluz.ee.openapi.filters.SwaggerUIFilter;
 import io.swagger.v3.jaxrs2.integration.OpenApiServlet;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.servlet.DefaultServlet;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -67,17 +64,8 @@ public class OpenApiExtension implements Extension {
 
                     Optional<Integer> port = ConfigurationUtil.getInstance().getInteger("kumuluzee.server.http.port");
 
-                    String serverUrl = "http://localhost" + (port.map(Object::toString).orElse(""));
 
                     OpenAPIDefinition openAPIDefinitionAnnotation = applicationClass.getAnnotation(OpenAPIDefinition.class);
-                    if (openAPIDefinitionAnnotation != null) {
-                        try {
-                            URL url = new URL(openAPIDefinitionAnnotation.servers()[0].url());
-                            serverUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
-                        } catch (MalformedURLException e) {
-                            LOG.warning("Server URL invalid: " + e.getMessage());
-                        }
-                    }
 
                     ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);
                     if (applicationPathAnnotation != null) {
@@ -88,7 +76,7 @@ public class OpenApiExtension implements Extension {
                                 URL url = new URL(openAPIDefinitionAnnotation.servers()[0].url());
                                 applicationPath = url.getPath();
                             } catch (MalformedURLException e) {
-                                LOG.warning("Server URL invalid: " + e.getMessage());
+                                LOG.warning("Server URL defined in annotation OpenAPIDefinition is invalid: " + e.getMessage());
                             }
                         }
                     }
@@ -101,22 +89,6 @@ public class OpenApiExtension implements Extension {
                     } else {
                         specParams.put("openApi.configuration.location", "api-specs/" + applicationPath + "/openapi-configuration.json");
                         server.registerServlet(OpenApiServlet.class, "/api-specs/" + applicationPath + "/*", specParams, 1);
-                    }
-
-                    Map<String, String> swaggerUiParams = new HashMap<>();
-                    URL webApp = ResourceUtils.class.getClassLoader().getResource("swagger-ui");
-
-                    if (webApp != null && configurationUtil.getBoolean("kumuluzee.openapi.ui.enabled").orElse(false)) {
-                        swaggerUiParams.put("resourceBase", webApp.toString());
-                        server.registerServlet(DefaultServlet.class, "/api-specs/ui/*", swaggerUiParams, 1);
-
-                        Map<String, String> swaggerUiFilterParams = new HashMap<>();
-
-                        swaggerUiFilterParams.put("url", serverUrl + "/api-specs/" + applicationPath + "/openapi.json");
-                        server.registerFilter(SwaggerUIFilter.class, "/api-specs/ui/*", swaggerUiFilterParams);
-
-                    } else {
-                        LOG.severe("Unable to find Swagger-UI artifacts or Swagger UI is disabled.");
                     }
 
                     LOG.info("OpenAPI extension initialized.");

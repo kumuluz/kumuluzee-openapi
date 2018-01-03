@@ -76,21 +76,28 @@ http://localhost:8080/api-specs/v1/openapi.json
 
 Serving OpenAPI specification can be disabled by setting property **kumuluzee.openapi.spec.enabled** to false. By default serving API spec is enabled.
 
-## Adding Swagger-UI
+## Adding OpenAPI UI
 
-To serve API specification in visual form and to allow API consumers to interact with API resources you can add Swagger-UI by setting 
-  **kumuluzee.openapi.ui.enabled** to ***true***, by default UI is not included.
+To serve API specification in visual form and to allow API consumers to interact with API resources you can add OpenAPI UI by including dependency:
+  
+```xml
+<dependency>
+    <groupId>com.kumuluz.ee.openapi</groupId>
+    <artifactId>kumuluzee-openapi-ui</artifactId>
+    <version>${kumuluzee-openapi.version}</version>
+</dependency>
+```
 
+Dependency will include OpenAPI UI artifacts, in case you want to disable OpenAPI UI during the runtime you can do so by setting configuration property:
+ 
 ```yaml
 kumuluzee:
   openapi:
-      ui:
-        enabled: true
+    ui:
+      enabled: false
 ```
 
-After startup Swagger-UI is available at: http://localhost:8080/api-specs/ui (for all APIs).
-
-By default Swagger-UI will not be added to application, you have to explicitly set the above property to true.
+After startup OpenAPI UI is available at: http://localhost:8080/api-specs/ui.
 
 ## Changelog
 

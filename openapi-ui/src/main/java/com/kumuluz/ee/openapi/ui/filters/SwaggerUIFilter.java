@@ -1,6 +1,4 @@
-package com.kumuluz.ee.openapi.filters;
-
-import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+package com.kumuluz.ee.openapi.ui.filters;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
