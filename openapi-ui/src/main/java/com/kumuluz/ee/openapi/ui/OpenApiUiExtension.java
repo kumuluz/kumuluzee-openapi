@@ -65,9 +65,18 @@ public class OpenApiUiExtension implements Extension {
 
                 String applicationPath = "";
 
-                Optional<Integer> port = ConfigurationUtil.getInstance().getInteger("kumuluzee.server.http.port");
+                Integer port = null;
+                String serverUrl = "localhost";
 
-                String serverUrl = "http://localhost" + (port.map(Object::toString).orElse(""));
+                if (eeConfig.getServer().getHttp() != null) {
+                    port = eeConfig.getServer().getHttp().getPort();
+                    serverUrl = "http://" + serverUrl;
+                } else {
+                    port = eeConfig.getServer().getHttps().getPort();
+                    serverUrl = "https://" + serverUrl;
+                }
+
+                serverUrl += (port != null ? ":" + port.toString() : "");
 
                 OpenAPIDefinition openAPIDefinitionAnnotation = applicationClass.getAnnotation(OpenAPIDefinition.class);
                 if (openAPIDefinitionAnnotation != null) {
