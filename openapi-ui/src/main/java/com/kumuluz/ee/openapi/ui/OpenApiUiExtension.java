@@ -70,6 +70,8 @@ public class OpenApiUiExtension implements Extension {
                         serverUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
                     } catch (MalformedURLException e) {
                         LOG.warning("Server URL invalid: " + e.getMessage());
+                    } catch (IndexOutOfBoundsException e) {
+                        LOG.warning("Servers not provided in annotation OpenAPIDefinition, will use default server url: " + serverUrl);
                     }
                 }
 
