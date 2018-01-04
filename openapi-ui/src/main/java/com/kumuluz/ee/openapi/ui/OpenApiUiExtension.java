@@ -19,6 +19,12 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * OpenApiUiExtension class - hook-up OpenApiServlets to expose api specifications using SwaggerUI.
+ *
+ * @author Zvone Gazvoda
+ * @since 1.0.0
+ */
 @EeExtensionDef(name = "OpenAPI-UI", group = "OPEN_API_UI")
 public class OpenApiUiExtension implements Extension {
 

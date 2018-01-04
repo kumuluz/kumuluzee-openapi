@@ -5,6 +5,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * SwaggerUIFilter class.
+ *
+ * @author Zvone Gazvoda
+ * @since 1.0.0
+ */
 public class SwaggerUIFilter implements Filter {
 
     private FilterConfig filterConfig;
