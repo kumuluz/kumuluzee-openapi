@@ -27,13 +27,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <kumuluzee.version>2.5.0-SNAPSHOT</kumuluzee.version>
+        <kumuluzee.version>2.5.2</kumuluzee.version>
 
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
         <gpg.plugin.version>1.6</gpg.plugin.version>
-        <swagger.version>2.0.0-rc3</swagger.version>
-        <swagger-ui.version>3.2.2</swagger-ui.version>
+        <swagger.version>2.0.1</swagger.version>
+        <swagger-ui.version>3.13.6</swagger-ui.version>
         <jersey-container-servlet.version>2.25.1</jersey-container-servlet.version>
         <jackson-dataformat-csv.version>2.8.10</jackson-dataformat-csv.version>
 
@@ -123,6 +123,11 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.version}</version>
             </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -142,30 +147,11 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <proc>none</proc>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>compile-important-processor</id>
-                        <phase>process-test-sources</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <proc>none</proc>
-                            <testIncludes>
-                                <include>com/kumuluz/ee/openapi/processor/*</include>
-                            </testIncludes>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <compilerArgument>
+                        -proc:none
+                    </compilerArgument>
+                </configuration>
             </plugin>
         </plugins>
     </build>
