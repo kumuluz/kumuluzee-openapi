@@ -4,6 +4,7 @@ import javax.annotation.processing.Filer;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.*;
+import java.nio.file.NoSuchFileException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -67,7 +68,7 @@ public class AnnotationProcessorUtil {
             reader = resource.openReader(true);
             AnnotationProcessorUtil.readOldFile(content, reader);
             return resource;
-        } catch (FileNotFoundException e) {
+        } catch (NoSuchFileException | FileNotFoundException e) {
             // close reader, return null
         } finally {
             if (reader != null) {
