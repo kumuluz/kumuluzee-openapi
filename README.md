@@ -1,10 +1,10 @@
 # KumuluzEE OpenAPI
 [![Build Status](https://img.shields.io/travis/kumuluz/kumuluzee-openapi/master.svg?style=flat)](https://travis-ci.org/kumuluz/kumuluzee-openapi)
 
-> KumuluzEE OpenAPI extension provides powerful tools to incorporate and visualize the OpenAPI 3 specification to your microservice.
+> KumuluzEE OpenAPI project provides powerful tools to incorporate and visualize the OpenAPI 3 specification to your microservice.
 
-KumuluzEE OpenAPI extension allows you to document microservice APIs using OpenAPI v3 compliant annotations. Extension will automatically hook-up servlet that will 
-serve your API specifications on endpoint ```/api-specs/<jax-rs application-base-path>/openapi.[json|yaml]```. Furthermore, extensions allows you to integrate Swagger-UI into your
+KumuluzEE OpenAPI project allows you to document microservice APIs using OpenAPI v3 compliant annotations. Project will automatically hook-up servlet that will 
+serve your API specifications on endpoint ```/api-specs/<jax-rs application-base-path>/openapi.[json|yaml]```. Furthermore, project allows you to integrate Swagger-UI into your
 microservice that will visualize APIs documentation and allow you to interact with your API resources.
  
 More details: [OpenAPI v3 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md).
