@@ -41,7 +41,7 @@ public class OpenApiExtension implements Extension {
 
             ConfigurationUtil configurationUtil = ConfigurationUtil.getInstance();
 
-            if (configurationUtil.getBoolean("kumuluzee.openapi.spec.enabled").orElse(true)) {
+            if (configurationUtil.getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
 
                 LOG.info("Initializing OpenAPI extension.");
 

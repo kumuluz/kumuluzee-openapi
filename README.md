@@ -99,6 +99,14 @@ kumuluzee:
 
 After startup OpenAPI UI is available at: http://localhost:8080/api-specs/ui.
 
+If you want to disable OpenAPI Dependency you can set the following property:
+ 
+```yaml
+kumuluzee:
+  openapi:
+    enabled: false
+```
+
 ## Changelog
 
 Recent changes can be viewed on Github on the [Releases Page](https://github.com/kumuluz/kumuluzee-openapi/releases)

@@ -111,7 +111,7 @@ public class OpenApiUiExtension implements Extension {
                 URL webApp = ResourceUtils.class.getClassLoader().getResource("swagger-ui");
 
                 if (webApp != null && configurationUtil.getBoolean("kumuluzee.openapi.ui.enabled").orElse(true) && configurationUtil
-                        .getBoolean("kumuluzee.openapi.spec.enabled").orElse(true)) {
+                        .getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
                     swaggerUiParams.put("resourceBase", webApp.toString());
                     server.registerServlet(DefaultServlet.class, "/api-specs/ui/*", swaggerUiParams, 1);
 
