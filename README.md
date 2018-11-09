@@ -44,9 +44,8 @@ public class SessionsResource {
             @ApiResponse(responseCode = "200",
                     description = "List of sessions",
                     content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = Session.class)),
-                    headers = {@Header(name = "X-Total-Count",
-                            schema = @Schema(type = "int"))}
+                            array = @ArraySchema(schema = @Schema(implementation = Session.class))),
+                    headers = {@Header(name = "X-Total-Count", schema = @Schema(type = "integer"))}
                     )})
     @SecurityRequirement(name = "openid-connect")
     @GET
