@@ -65,13 +65,29 @@ java -jar target/${project.build.finalName}.jar
 
 After startup API specification will be available at:
 
-**http://<-hostname-:<-port->/api-specs/<-application-base-path->/openapi.[json,yaml]**
+**http://<-hostname-:<-port->/<-optional-context-path->/api-specs/<-application-base-path->/openapi.[json,yaml]**
 
 Example:
 
 http://localhost:8080/api-specs/v1/openapi.json
 
 Serving OpenAPI specification can be disabled by setting property **kumuluzee.openapi.spec.enabled** to false. By default serving API spec is enabled.
+
+### Mapping to different endpoint
+
+You can set a different servlet endpoint to serve the specification.
+```yaml
+kumuluzee:
+  openapi:
+    enabled: false
+    servlet:
+      mapping: /custom
+    ui:
+      enabled: true
+      mapping: /custom/ui
+```
+
+Remember that context path will be prefixed. One difference with `kumuluzee-openapi-mp` is that JAX-RS Application path is also appended after mapping.
 
 ## Adding OpenAPI UI
 

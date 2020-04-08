@@ -10,7 +10,7 @@ import com.kumuluz.ee.jetty.JettyServletServer;
 import com.kumuluz.ee.openapi.ui.filters.SwaggerUIFilter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.servlet.DefaultServlet;
+import com.kumuluz.ee.openapi.ui.servlets.UiServlet;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -63,8 +63,6 @@ public class OpenApiUiExtension implements Extension {
                     applicationClass = applicationClass.getSuperclass();
                 }
 
-                String applicationPath = "";
-
                 Integer port = null;
                 String serverUrl = "localhost";
 
@@ -90,6 +88,7 @@ public class OpenApiUiExtension implements Extension {
                     }
                 }
 
+                String applicationPath = "";
                 ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);
                 if (applicationPathAnnotation != null) {
                     applicationPath = applicationPathAnnotation.value();
@@ -103,25 +102,72 @@ public class OpenApiUiExtension implements Extension {
                         }
                     }
                 }
+                if (applicationPath.endsWith("/")) {
+                    applicationPath = applicationPath.substring(0, applicationPath.length() - 1);
+                }
+                if (!applicationPath.startsWith("/")) {
+                    applicationPath = "/"+applicationPath;
+                }
 
-                applicationPath = StringUtils.strip(applicationPath, "/");
+                URL webApp = ResourceUtils.class.getClassLoader().getResource("swagger-ui/api-specs/ui");
 
-                Map<String, String> swaggerUiParams = new HashMap<>();
+                // ui path
+                String uiPath = configurationUtil.get("kumuluzee.openapi.ui.mapping").orElse("/api-specs/ui");
+                if (uiPath.endsWith("*")) {
+                    uiPath = uiPath.substring(0, uiPath.length() - 1);
+                }
+                if (uiPath.endsWith("/")) {
+                    uiPath = uiPath.substring(0, uiPath.length() - 1);
+                }
 
-                URL webApp = ResourceUtils.class.getClassLoader().getResource("swagger-ui");
+                if (uiPath.isEmpty()) {
+                    // not supported as of yet, probably could be done by very strict redirects in SwaggerUIFilter
+                    throw new IllegalArgumentException("UI cannot be served from root. Please change " +
+                            "kumuluzee.openapi.ui.mapping configuration value accordingly.");
+                }
+
+                // spec path
+                String specPath = configurationUtil.get("kumuluzee.openapi.servlet.mapping").orElse("/api-specs");
+                if ("".equals(applicationPath) || "/".equals(applicationPath)) {
+                    specPath = specPath+"/openapi.json";
+                }
+                else {
+                    specPath = specPath+applicationPath+"/openapi.json";
+                }
+
+                // context path
+                String contextPath = configurationUtil.get("kumuluzee.server.context-path").orElse("");
+                if (contextPath.endsWith("/")) {
+                    contextPath = contextPath.substring(0, contextPath.length() - 1);
+                }
 
                 if (webApp != null && configurationUtil.getBoolean("kumuluzee.openapi.ui.enabled").orElse(true) && configurationUtil
                         .getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
+
+                    LOG.info("Swagger UI servlet registered on "+uiPath+ " (servlet context is implied)");
+                    LOG.info("Swagger UI can be accessed at "+serverUrl + contextPath + uiPath);
+
+                    // create servlet that will serve static files
+                    Map<String, String> swaggerUiParams = new HashMap<>();
                     swaggerUiParams.put("resourceBase", webApp.toString());
-                    server.registerServlet(DefaultServlet.class, "/api-specs/ui/*", swaggerUiParams, 1);
+                    swaggerUiParams.put("uiPath", uiPath); //context already included in servlet resolution
+                    server.registerServlet(UiServlet.class, uiPath + "/*", swaggerUiParams, 1);
 
+                    String specUrl = serverUrl + contextPath + specPath;
+                    String oauth2RedirectUrl = serverUrl + contextPath + uiPath;
+                    String redirUiPath = contextPath+uiPath;
+
+                    LOG.info("Swagger UI spec URL resolved to "+specUrl);
+
+                    // create filter that will redirect to Swagger UI with appropriate parameters
                     Map<String, String> swaggerUiFilterParams = new HashMap<>();
-
-                    swaggerUiFilterParams.put("url", serverUrl + "/api-specs/" + applicationPath + "/openapi.json");
-                    server.registerFilter(SwaggerUIFilter.class, "/api-specs/ui/*", swaggerUiFilterParams);
+                    swaggerUiFilterParams.put("specUrl", specUrl);
+                    swaggerUiFilterParams.put("uiPath", redirUiPath);
+                    swaggerUiFilterParams.put("oauth2RedirectUrl", oauth2RedirectUrl + "/oauth2-redirect.html");
+                    server.registerFilter(SwaggerUIFilter.class, uiPath + "/*", swaggerUiFilterParams);
 
                 } else {
-                    LOG.severe("OpenAPI UI or OpenAPI Spec is disabled, will not initialize UI.");
+                    LOG.severe("Swagger UI not found. Try cleaning and rebuilding project.");
                 }
             }
         }
