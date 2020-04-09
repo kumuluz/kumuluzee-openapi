@@ -4,7 +4,7 @@
 > KumuluzEE OpenAPI project provides powerful tools to incorporate and visualize the OpenAPI 3 specification to your microservice.
 
 KumuluzEE OpenAPI project allows you to document microservice APIs using OpenAPI v3 compliant annotations. Project will automatically hook-up servlet that will 
-serve your API specifications on endpoint ```/api-specs/<jax-rs application-base-path>/openapi.[json|yaml]```. Furthermore, project allows you to integrate Swagger-UI into your
+serve your API specifications on endpoint ```/api-specs/openapi.[json|yaml]```. Furthermore, project allows you to integrate Swagger-UI into your
 microservice that will visualize APIs documentation and allow you to interact with your API resources.
  
 More details: [OpenAPI v3 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md).
@@ -65,11 +65,11 @@ java -jar target/${project.build.finalName}.jar
 
 After startup API specification will be available at:
 
-**http://<-hostname-:<-port->/<-optional-context-path->/api-specs/<-application-base-path->/openapi.[json,yaml]**
+**http://<-hostname-:<-port->/<-optional-context-path->/api-specs/openapi.[json,yaml]**
 
 Example:
 
-http://localhost:8080/api-specs/v1/openapi.json
+http://localhost:8080/api-specs/openapi.json
 
 Serving OpenAPI specification can be disabled by setting property **kumuluzee.openapi.spec.enabled** to false. By default serving API spec is enabled.
 
@@ -87,7 +87,7 @@ kumuluzee:
       mapping: /custom/ui
 ```
 
-Remember that context path will be prefixed. One difference with `kumuluzee-openapi-mp` is that JAX-RS Application path is also appended after mapping.
+Remember that context path will be prefixed.
 
 ## Adding OpenAPI UI
 

@@ -15,6 +15,8 @@ import com.kumuluz.ee.openapi.ui.servlets.UiServlet;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
@@ -56,12 +58,6 @@ public class OpenApiUiExtension implements Extension {
             ServiceLoader.load(Application.class).forEach(applications::add);
 
             if (applications.size() == 1) {
-                Application application = applications.get(0);
-
-                Class<?> applicationClass = application.getClass();
-                if (targetClassIsProxied(applicationClass)) {
-                    applicationClass = applicationClass.getSuperclass();
-                }
 
                 Integer port = null;
                 String serverUrl = "localhost";
@@ -76,39 +72,6 @@ public class OpenApiUiExtension implements Extension {
 
                 serverUrl += (port != null ? ":" + port.toString() : "");
 
-                OpenAPIDefinition openAPIDefinitionAnnotation = applicationClass.getAnnotation(OpenAPIDefinition.class);
-                if (openAPIDefinitionAnnotation != null) {
-                    try {
-                        URL url = new URL(openAPIDefinitionAnnotation.servers()[0].url());
-                        serverUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
-                    } catch (MalformedURLException e) {
-                        LOG.warning("Server URL invalid: " + e.getMessage());
-                    } catch (IndexOutOfBoundsException e) {
-                        LOG.warning("Servers not provided in annotation OpenAPIDefinition, will use default server url: " + serverUrl);
-                    }
-                }
-
-                String applicationPath = "";
-                ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);
-                if (applicationPathAnnotation != null) {
-                    applicationPath = applicationPathAnnotation.value();
-                } else {
-                    if (openAPIDefinitionAnnotation != null) {
-                        try {
-                            URL url = new URL(openAPIDefinitionAnnotation.servers()[0].url());
-                            applicationPath = url.getPath();
-                        } catch (MalformedURLException e) {
-                            LOG.warning("Server URL defined in annotation OpenAPIDefinition is invalid: " + e.getMessage());
-                        }
-                    }
-                }
-                if (applicationPath.endsWith("/")) {
-                    applicationPath = applicationPath.substring(0, applicationPath.length() - 1);
-                }
-                if (!applicationPath.startsWith("/")) {
-                    applicationPath = "/"+applicationPath;
-                }
-
                 URL webApp = ResourceUtils.class.getClassLoader().getResource("swagger-ui/api-specs/ui");
 
                 // ui path
@@ -116,9 +79,7 @@ public class OpenApiUiExtension implements Extension {
                 if (uiPath.endsWith("*")) {
                     uiPath = uiPath.substring(0, uiPath.length() - 1);
                 }
-                if (uiPath.endsWith("/")) {
-                    uiPath = uiPath.substring(0, uiPath.length() - 1);
-                }
+                uiPath = prependAndStripSlash(uiPath);
 
                 if (uiPath.isEmpty()) {
                     // not supported as of yet, probably could be done by very strict redirects in SwaggerUIFilter
@@ -127,19 +88,12 @@ public class OpenApiUiExtension implements Extension {
                 }
 
                 // spec path
-                String specPath = configurationUtil.get("kumuluzee.openapi.servlet.mapping").orElse("/api-specs");
-                if ("".equals(applicationPath) || "/".equals(applicationPath)) {
-                    specPath = specPath+"/openapi.json";
-                }
-                else {
-                    specPath = specPath+applicationPath+"/openapi.json";
-                }
+                String specPath = configurationUtil.get("kumuluzee.openapi.servlet.mapping")
+                        .orElse("/api-specs");
 
                 // context path
                 String contextPath = configurationUtil.get("kumuluzee.server.context-path").orElse("");
-                if (contextPath.endsWith("/")) {
-                    contextPath = contextPath.substring(0, contextPath.length() - 1);
-                }
+                contextPath = prependAndStripSlash(contextPath);
 
                 if (webApp != null && configurationUtil.getBoolean("kumuluzee.openapi.ui.enabled").orElse(true) && configurationUtil
                         .getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
@@ -157,7 +111,7 @@ public class OpenApiUiExtension implements Extension {
                     String oauth2RedirectUrl = serverUrl + contextPath + uiPath;
                     String redirUiPath = contextPath+uiPath;
 
-                    LOG.info("Swagger UI spec URL resolved to "+specUrl);
+                    LOG.info("Swagger UI spec URL resolved to "+specUrl+"/openapi.json");
 
                     // create filter that will redirect to Swagger UI with appropriate parameters
                     Map<String, String> swaggerUiFilterParams = new HashMap<>();
@@ -175,5 +129,10 @@ public class OpenApiUiExtension implements Extension {
 
     private boolean targetClassIsProxied(Class targetClass) {
         return targetClass.getCanonicalName().contains("$Proxy");
+    }
+
+    private String prependAndStripSlash(String s) {
+        if (!s.startsWith("/")) s = s+"/";
+        return StringUtils.stripEnd(s, "/");
     }
 }
