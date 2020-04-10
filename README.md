@@ -89,6 +89,13 @@ kumuluzee:
 
 Remember that context path will be prefixed.
 
+If you deploy behind reverse proxy so that specification and UI are no longer reachable locally or by internal domain, you can override the base URL. Specification and UI mappings will be appended to this base.
+```yaml
+kumuluzee:
+  openapi:
+    base-url: http://behind.proxy.example.com
+```
+
 ## Adding OpenAPI UI
 
 To serve API specification in visual form and to allow API consumers to interact with API resources you can add OpenAPI UI by including dependency:

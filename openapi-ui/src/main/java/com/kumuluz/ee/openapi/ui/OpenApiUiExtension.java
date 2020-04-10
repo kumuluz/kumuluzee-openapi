@@ -99,7 +99,6 @@ public class OpenApiUiExtension implements Extension {
                         .getBoolean("kumuluzee.openapi.enabled").orElse(true)) {
 
                     LOG.info("Swagger UI servlet registered on "+uiPath+ " (servlet context is implied)");
-                    LOG.info("Swagger UI can be accessed at "+serverUrl + contextPath + uiPath);
 
                     // create servlet that will serve static files
                     Map<String, String> swaggerUiParams = new HashMap<>();
@@ -107,17 +106,22 @@ public class OpenApiUiExtension implements Extension {
                     swaggerUiParams.put("uiPath", uiPath); //context already included in servlet resolution
                     server.registerServlet(UiServlet.class, uiPath + "/*", swaggerUiParams, 1);
 
-                    String specUrl = serverUrl + contextPath + specPath;
-                    String oauth2RedirectUrl = serverUrl + contextPath + uiPath;
+                    //Used to override base URL when deploying behind reverse proxy
+                    String baseUrl = configurationUtil.get("kumuluzee.openapi.base-url")
+                            .orElse(serverUrl + contextPath);
+
+                    String specUrl = baseUrl + specPath;
+                    String uiBaseUrl = baseUrl + uiPath;
                     String redirUiPath = contextPath+uiPath;
 
+                    LOG.info("Swagger UI can be accessed at "+uiBaseUrl);
                     LOG.info("Swagger UI spec URL resolved to "+specUrl+"/openapi.json");
 
                     // create filter that will redirect to Swagger UI with appropriate parameters
                     Map<String, String> swaggerUiFilterParams = new HashMap<>();
                     swaggerUiFilterParams.put("specUrl", specUrl);
                     swaggerUiFilterParams.put("uiPath", redirUiPath);
-                    swaggerUiFilterParams.put("oauth2RedirectUrl", oauth2RedirectUrl + "/oauth2-redirect.html");
+                    swaggerUiFilterParams.put("oauth2RedirectUrl", uiBaseUrl + "/oauth2-redirect.html");
                     server.registerFilter(SwaggerUIFilter.class, uiPath + "/*", swaggerUiFilterParams);
 
                 } else {
