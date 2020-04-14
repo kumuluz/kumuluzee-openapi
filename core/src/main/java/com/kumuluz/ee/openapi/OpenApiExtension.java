@@ -54,7 +54,7 @@ public class OpenApiExtension implements Extension {
                             .orElse("/api-specs");
                     mapping = prependAndStripSlash(mapping);
 
-                    specParams.put("openApi.configuration.location", mapping+"/openapi-configuration.json");
+                    specParams.put("openApi.configuration.location", "api-specs/openapi-configuration.json");
                     server.registerServlet(OpenApiServlet.class, mapping+"/*", specParams, 1);
 
                     LOG.info("OpenAPI extension initialized.");
