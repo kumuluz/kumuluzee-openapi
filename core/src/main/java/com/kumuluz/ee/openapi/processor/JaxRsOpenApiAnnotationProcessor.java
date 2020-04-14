@@ -3,6 +3,7 @@ package com.kumuluz.ee.openapi.processor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 import com.kumuluz.ee.openapi.models.OpenApiConfiguration;
 import com.kumuluz.ee.openapi.utils.AnnotationProcessorUtil;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -156,24 +157,17 @@ public class JaxRsOpenApiAnnotationProcessor extends AbstractProcessor {
                     oac.setPrettyPrint(true);
                     if (applicationElementNames.size() == 1) {
                         oac.setResourcePackages(resourceElementNames);
+
+                        //Blacklist
+                        oac.getResourcePackages().remove("org.glassfish.jersey.server.wadl");
                     }
 
                     oac.setOpenAPI(openAPI);
 
                     try {
-
                         String jsonOAC = mapper.writeValueAsString(oac);
 
-                        String path = new URL(openAPI.getServers().get(0).getUrl()).getPath();
-
-                        path = StringUtils.strip(path, "/");
-
-                        if (path.equals("")) {
-                            AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/openapi-configuration.json", filer);
-                        } else {
-                            AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/" + path + "/openapi-configuration.json", filer);
-                        }
-
+                        AnnotationProcessorUtil.writeFile(jsonOAC, "api-specs/openapi-configuration.json", filer);
                     } catch (IOException e) {
                         LOG.warning(e.getMessage());
                     }

@@ -9,13 +9,9 @@ import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 import com.kumuluz.ee.jetty.JettyServletServer;
 import io.swagger.v3.jaxrs2.integration.OpenApiServlet;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -51,42 +47,15 @@ public class OpenApiExtension implements Extension {
                 ServiceLoader.load(Application.class).forEach(applications::add);
 
                 if (applications.size() == 1) {
-                    Application application = applications.get(0);
 
                     Map<String, String> specParams = new HashMap<>();
 
-                    Class<?> applicationClass = application.getClass();
-                    if (targetClassIsProxied(applicationClass)) {
-                        applicationClass = applicationClass.getSuperclass();
-                    }
+                    String mapping = ConfigurationUtil.getInstance().get("kumuluzee.openapi.servlet.mapping")
+                            .orElse("/api-specs");
+                    mapping = prependAndStripSlash(mapping);
 
-                    String applicationPath = "";
-
-                    OpenAPIDefinition openAPIDefinitionAnnotation = applicationClass.getAnnotation(OpenAPIDefinition.class);
-
-                    ApplicationPath applicationPathAnnotation = applicationClass.getAnnotation(ApplicationPath.class);
-                    if (applicationPathAnnotation != null) {
-                        applicationPath = applicationPathAnnotation.value();
-                    } else {
-                        if (openAPIDefinitionAnnotation != null) {
-                            try {
-                                URL url = new URL(openAPIDefinitionAnnotation.servers()[0].url());
-                                applicationPath = url.getPath();
-                            } catch (MalformedURLException e) {
-                                LOG.warning("Server URL defined in annotation OpenAPIDefinition is invalid: " + e.getMessage());
-                            }
-                        }
-                    }
-
-                    applicationPath = StringUtils.strip(applicationPath, "/");
-
-                    if (applicationPath.equals("")) {
-                        specParams.put("openApi.configuration.location", "api-specs/openapi-configuration.json");
-                        server.registerServlet(OpenApiServlet.class, "/api-specs/*", specParams, 1);
-                    } else {
-                        specParams.put("openApi.configuration.location", "api-specs/" + applicationPath + "/openapi-configuration.json");
-                        server.registerServlet(OpenApiServlet.class, "/api-specs/" + applicationPath + "/*", specParams, 1);
-                    }
+                    specParams.put("openApi.configuration.location", "api-specs/openapi-configuration.json");
+                    server.registerServlet(OpenApiServlet.class, mapping+"/*", specParams, 1);
 
                     LOG.info("OpenAPI extension initialized.");
                 } else {
@@ -98,5 +67,10 @@ public class OpenApiExtension implements Extension {
 
     private boolean targetClassIsProxied(Class targetClass) {
         return targetClass.getCanonicalName().contains("$Proxy");
+    }
+
+    public static String prependAndStripSlash(String s) {
+        if (!s.startsWith("/")) s = s+"/";
+        return StringUtils.stripEnd(s, "/");
     }
 }

@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * SwaggerUIFilter class.
@@ -13,11 +14,15 @@ import java.io.IOException;
  */
 public class SwaggerUIFilter implements Filter {
 
-    private FilterConfig filterConfig;
+    private String specUrl;
+    private String uiPath;
+    private String oauth2RedirectUrl;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
+        this.specUrl = filterConfig.getInitParameter("specUrl");
+        this.uiPath = filterConfig.getInitParameter("uiPath");
+        this.oauth2RedirectUrl = filterConfig.getInitParameter("oauth2RedirectUrl");
     }
 
     @Override
@@ -27,18 +32,23 @@ public class SwaggerUIFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
-        String path = httpServletRequest.getServletPath();
+        String path = httpServletRequest.getContextPath()+httpServletRequest.getServletPath();
 
-        if (path.contains("/ui")) {
-            if ((httpServletRequest.getQueryString() == null || !httpServletRequest.getQueryString().contains
-                    ("url"))) {
-                String url = filterConfig.getInitParameter("url");
-                if (httpServletRequest.getPathInfo() != null) {
-                    httpServletResponse.sendRedirect("/api-specs/ui" + httpServletRequest.getPathInfo() + "?url=" + url);
-                } else {
-                    httpServletResponse.sendRedirect("/api-specs/ui/?url=" + url);
-                }
+        // check if request is for UI
+        if (path.contains(uiPath)) {
+            // match static files and urls with existing parameter url=... set
+            Pattern staticFiles = Pattern.compile("(\\.css|\\.js|\\.html|url=)");
+            String requestQueryString = httpServletRequest.getRequestURI();
+            if (httpServletRequest.getQueryString() != null) {
+                requestQueryString += httpServletRequest.getQueryString();
+            }
+            if (!staticFiles.matcher(requestQueryString).find()) {
+                // not a static file, redirect to appropriate url
+                httpServletResponse.sendRedirect(uiPath +
+                        "/?url=" + specUrl +
+                        "&oauth2RedirectUrl=" + oauth2RedirectUrl);
             } else {
+                // static file, leave as is
                 filterChain.doFilter(httpServletRequest, httpServletResponse);
             }
 
@@ -49,6 +59,5 @@ public class SwaggerUIFilter implements Filter {
 
     @Override
     public void destroy() {
-
     }
 }
