@@ -116,14 +116,35 @@ public class OpenApiUiExtension implements Extension {
                     server.registerServlet(DefaultServlet.class, "/api-specs/ui/*", swaggerUiParams, 1);
 
                     Map<String, String> swaggerUiFilterParams = new HashMap<>();
+    
+                    String uiServletMapValue = configurationUtil
+                        .get("kumuluzee.openapi.ui.mapping")
+                        .orElse("/api-specs/ui");
+                    
+                    String uiServletMapping = uiServletMapValue + "/*";
+                    String servletMapping = getSpecsUrl(applicationPath);
 
-                    swaggerUiFilterParams.put("url", serverUrl + "/api-specs/" + applicationPath + "/openapi.json");
-                    server.registerFilter(SwaggerUIFilter.class, "/api-specs/ui/*", swaggerUiFilterParams);
+                    swaggerUiFilterParams.put("url", serverUrl + servletMapping + "/openapi.json");
+                    server.registerFilter(SwaggerUIFilter.class, uiServletMapping, swaggerUiFilterParams);
 
+                    LOG.info("Swagger UI registered on " + uiServletMapValue);
                 } else {
                     LOG.severe("OpenAPI UI or OpenAPI Spec is disabled, will not initialize UI.");
                 }
             }
+        }
+    }
+    
+    private String getSpecsUrl(String applicationPath) {
+        ConfigurationUtil configurationUtil = ConfigurationUtil.getInstance();
+        String servletMapValue = configurationUtil
+            .get("kumuluzee.openapi.servlet.mapping")
+            .orElse("/api-specs");
+        
+        if (applicationPath.equals("")) {
+            return servletMapValue;
+        } else {
+            return "/" + applicationPath + servletMapValue;
         }
     }
 
