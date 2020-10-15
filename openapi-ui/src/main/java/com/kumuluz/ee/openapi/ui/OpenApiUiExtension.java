@@ -117,17 +117,33 @@ public class OpenApiUiExtension implements Extension {
 
                     Map<String, String> swaggerUiFilterParams = new HashMap<>();
 
-                    swaggerUiFilterParams.put("url", serverUrl + "/api-specs/" + applicationPath + "/openapi.json");
+                    swaggerUiFilterParams.put("url", serverUrl + getSpecsUrl(applicationPath) + "/openapi.json");
                     server.registerFilter(SwaggerUIFilter.class, "/api-specs/ui/*", swaggerUiFilterParams);
 
+                    LOG.info("Swagger UI registered on /api-specs/ui");
                 } else {
                     LOG.severe("OpenAPI UI or OpenAPI Spec is disabled, will not initialize UI.");
                 }
             }
         }
     }
+    
+    private String getSpecsUrl(String applicationPath) {
+        ConfigurationUtil configurationUtil = ConfigurationUtil.getInstance();
+        String servletMapValue = configurationUtil
+            .get("kumuluzee.openapi.servlet.mapping")
+            .orElse("api-specs");
 
-    private boolean targetClassIsProxied(Class targetClass) {
+        servletMapValue = StringUtils.strip(servletMapValue, "/");
+        
+        if (applicationPath.equals("")) {
+            return "/" + servletMapValue;
+        } else {
+            return "/" + servletMapValue + "/" + applicationPath;
+        }
+    }
+
+    private boolean targetClassIsProxied(Class<?> targetClass) {
         return targetClass.getCanonicalName().contains("$Proxy");
     }
 }

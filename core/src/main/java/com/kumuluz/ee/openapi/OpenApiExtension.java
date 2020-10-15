@@ -79,15 +79,25 @@ public class OpenApiExtension implements Extension {
                     }
 
                     applicationPath = StringUtils.strip(applicationPath, "/");
+    
+                    String servletMapValue = configurationUtil
+                        .get("kumuluzee.openapi.servlet.mapping")
+                        .orElse("api-specs");
 
+                    // normalize servletMapValue to 'something/'
+                    servletMapValue = StringUtils.strip(servletMapValue, "/");
+                    
+                    String servletMapping;
                     if (applicationPath.equals("")) {
+                        servletMapping = "/" + servletMapValue + "/*";
                         specParams.put("openApi.configuration.location", "api-specs/openapi-configuration.json");
-                        server.registerServlet(OpenApiServlet.class, "/api-specs/*", specParams, 1);
                     } else {
+                        servletMapping = "/" + servletMapValue + "/" + applicationPath + "/*";
                         specParams.put("openApi.configuration.location", "api-specs/" + applicationPath + "/openapi-configuration.json");
-                        server.registerServlet(OpenApiServlet.class, "/api-specs/" + applicationPath + "/*", specParams, 1);
                     }
+                    server.registerServlet(OpenApiServlet.class, servletMapping, specParams, 1);
 
+                    LOG.info("OpenAPI servlet registered on " + servletMapping);
                     LOG.info("OpenAPI extension initialized.");
                 } else {
                     LOG.warning("Multiple JAX-RS applications not supported. OpenAPI definitions will not be served.");
