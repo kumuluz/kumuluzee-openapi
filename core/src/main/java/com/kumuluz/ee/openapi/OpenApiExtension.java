@@ -82,18 +82,21 @@ public class OpenApiExtension implements Extension {
     
                     String servletMapValue = configurationUtil
                         .get("kumuluzee.openapi.servlet.mapping")
-                        .orElse("/api-specs");
+                        .orElse("api-specs");
+
+                    // normalize servletMapValue to 'something/'
+                    servletMapValue = StringUtils.strip(servletMapValue, "/");
                     
                     String servletMapping;
                     if (applicationPath.equals("")) {
-                        servletMapping = servletMapValue + "/*";
+                        servletMapping = "/" + servletMapValue + "/*";
                         specParams.put("openApi.configuration.location", "api-specs/openapi-configuration.json");
-                        server.registerServlet(OpenApiServlet.class, servletMapping, specParams, 1);
                     } else {
-                        servletMapping = "/" + applicationPath + servletMapValue + "/*";
+                        servletMapping = "/" + servletMapValue + "/" + applicationPath + "/*";
                         specParams.put("openApi.configuration.location", "api-specs/" + applicationPath + "/openapi-configuration.json");
-                        server.registerServlet(OpenApiServlet.class, servletMapping, specParams, 1);
                     }
+                    server.registerServlet(OpenApiServlet.class, servletMapping, specParams, 1);
+
                     LOG.info("OpenAPI servlet registered on " + servletMapping);
                     LOG.info("OpenAPI extension initialized.");
                 } else {

@@ -116,18 +116,11 @@ public class OpenApiUiExtension implements Extension {
                     server.registerServlet(DefaultServlet.class, "/api-specs/ui/*", swaggerUiParams, 1);
 
                     Map<String, String> swaggerUiFilterParams = new HashMap<>();
-    
-                    String uiServletMapValue = configurationUtil
-                        .get("kumuluzee.openapi.ui.mapping")
-                        .orElse("/api-specs/ui");
-                    
-                    String uiServletMapping = uiServletMapValue + "/*";
-                    String servletMapping = getSpecsUrl(applicationPath);
 
-                    swaggerUiFilterParams.put("url", serverUrl + servletMapping + "/openapi.json");
-                    server.registerFilter(SwaggerUIFilter.class, uiServletMapping, swaggerUiFilterParams);
+                    swaggerUiFilterParams.put("url", serverUrl + getSpecsUrl(applicationPath) + "/openapi.json");
+                    server.registerFilter(SwaggerUIFilter.class, "/api-specs/ui/*", swaggerUiFilterParams);
 
-                    LOG.info("Swagger UI registered on " + uiServletMapValue);
+                    LOG.info("Swagger UI registered on /api-specs/ui");
                 } else {
                     LOG.severe("OpenAPI UI or OpenAPI Spec is disabled, will not initialize UI.");
                 }
@@ -139,16 +132,18 @@ public class OpenApiUiExtension implements Extension {
         ConfigurationUtil configurationUtil = ConfigurationUtil.getInstance();
         String servletMapValue = configurationUtil
             .get("kumuluzee.openapi.servlet.mapping")
-            .orElse("/api-specs");
+            .orElse("api-specs");
+
+        servletMapValue = StringUtils.strip(servletMapValue, "/");
         
         if (applicationPath.equals("")) {
-            return servletMapValue;
+            return "/" + servletMapValue;
         } else {
-            return "/" + applicationPath + servletMapValue;
+            return "/" + servletMapValue + "/" + applicationPath;
         }
     }
 
-    private boolean targetClassIsProxied(Class targetClass) {
+    private boolean targetClassIsProxied(Class<?> targetClass) {
         return targetClass.getCanonicalName().contains("$Proxy");
     }
 }
