@@ -71,6 +71,17 @@ Example:
 
 http://localhost:8080/api-specs/v1/openapi.json
 
+`/api-specs` mapping can be renamed by setting the configuration property `kumuluzee.openapi.servlet.mapping`, For
+example to move the above example to url http://localhost:8080/openapi-specs/v1/openapi.json use the following
+configuration:
+
+```yml
+kumuluzee:
+  openapi:
+    servlet:
+      mapping: openapi-specs
+```
+
 Serving OpenAPI specification can be disabled by setting property **kumuluzee.openapi.spec.enabled** to false. By default serving API spec is enabled.
 
 ## Adding OpenAPI UI
